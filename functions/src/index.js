@@ -1,4 +1,4 @@
-const {onRequest} = require("firebase-functions/v2/https");
+/*const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 
 // Create and deploy your first functions
@@ -22,3 +22,25 @@ app.get("/", (req, res) => {
 // Esporta il server Express come Firebase Function
 exports.api = functions.https.onRequest(app);
 
+*/
+const functions = require("firebase-functions");
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Rotte principali
+const userRoutes = require("./routes/users");
+//const bookingRoutes = require("./routes/bookings");
+//const workerRoutes = require("./routes/workers");
+
+app.use("/users", userRoutes);
+//app.use("/bookings", bookingRoutes);
+//app.use("/workers", workerRoutes);
+
+// Esportiamo l'app come Firebase Function
+exports.api = functions.https.onRequest(app);
