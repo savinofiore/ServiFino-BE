@@ -6,7 +6,7 @@ ServiFino è un servizio per la prenotazione e la gestione di lavoratori special
 Consente di prenotare e richiedere in modo smart e rapido personale. Chiunque può registrarsi e prestare servizio ai 
 locali aderenti all'iniziativa.
 
-## Framework utilizzati
+## Frameworks e tools utilizzati
 - Firebase function
 - Express
 - Node
@@ -15,14 +15,28 @@ locali aderenti all'iniziativa.
 ## Librerie implementate
 - CORS (middleware cors, consente di gestire le richieste in ingresso al server)
 - firebase-admin (consente accesso a db firebase)
-## Endpoints
-- http://127.0.0.1:5001/servifino/us-central1/api
-- Elenco di tutti gli utenti (GET): /users
+
 
 ## Comandi utili
-- <b>Lanciare emulatore firebase:</b> firebase emulators:start --only functions
+Entrare all'interno della cartella function:
+- <b>Lanciare emulatore firebase:</b> npm run serve
+- <b>Deploy functions firebase:</b> npm run deploy
 
+## Endpoints
+- http://127.0.0.1:5001/servifino/us-central1/api
+- Creazione di un utente (POST): /create
+- Elenco di tutti gli utenti (GET): /users
 
+### JSON per test Endpoints
+#### /create
+{
+"email": "test1@example.com",
+"password": "SecurePassword123",
+"displayName": "John Doe",
+"phoneNumber": "+391210456987",
+"photoURL": "https://example.com/photo.jpg",
+"disabled": false
+}
 
 ## Perché due file index.js?
 - functions/index.js è specifico per Firebase, che si occupa di esportare la funzione cloud.
