@@ -21,3 +21,13 @@ locali aderenti all'iniziativa.
 
 ## Comandi utili
 - <b>Lanciare emulatore firebase:</b> firebase emulators:start --only functions
+
+
+
+## Perché due file index.js?
+- functions/index.js è specifico per Firebase, che si occupa di esportare la funzione cloud.
+- src/index.js è il cuore della tua applicazione Express, che può essere facilmente testato o spostato su un altro ambiente (ad esempio, un server Node.js puro) senza dipendere da Firebase.
+### Vantaggi
+- Separation of Concerns: Ogni file ha un compito specifico.
+- Testabilità: Puoi testare facilmente l'app Express separatamente.
+- Portabilità: Se un giorno vuoi migrare da Firebase Functions a un altro servizio, dovrai solo modificare functions/index.js.
