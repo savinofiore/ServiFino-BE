@@ -45,6 +45,47 @@ const createUser = async (req, res) => {
     }
 };
 
+
+const deleteUser = async (req, res) => {
+    try {
+        if (req.method !== "POST") {
+            return res.status(405).send({ error: "Method Not Allowed" });
+        }
+
+        const { user, password, confirmedPassword } = req.body;
+
+        if (!user || !password || !confirmedPassword) {
+            if (password !== confirmedPassword) {
+                return res.status(400).send({
+                    error: "Password and confirmed password must be equal",
+                });
+            }
+            return res.status(400).send({
+                error: "User, password, and confirmed password are required",
+            });
+        }
+
+        if (!user.uid) {
+            return res.status(400).send({ error: "User UID is required" });
+        }
+
+        // Elimina l'utente da Firebase Authentication
+        await admin.auth().deleteUser(user.uid);
+
+        // Elimina il documento associato nel database Firestore
+        await admin.firestore().collection("users").doc(user.uid).delete();
+
+        // Operazione effettuata con successo
+        return res.status(200).send({
+            message: "User deleted successfully",
+            user: { user },
+        });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        return res.status(500).send({ error: error.message });
+    }
+};
+
 const getUsers = async (req, res) => {
     try {
         // Logica per recuperare gli utenti (ad esempio, da Firestore)
@@ -53,4 +94,4 @@ const getUsers = async (req, res) => {
         res.status(500).send({ error: error.message });
     }
 };
-module.exports = { createUser , getUsers };
+module.exports = { createUser , getUsers, deleteUser };

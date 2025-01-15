@@ -10,4 +10,16 @@ const validateCreateUser = (req, res, next) => {
     next(); // Procede al controller se i dati sono validi
 };
 
-module.exports = { validateCreateUser };
+const validateDeleteUser = (req, res, next) => {
+    const { user, password, confirmedPassword } = req.body;
+
+    if (!user || !password || !confirmedPassword) {
+        return res.status(400).send({
+            error: "Missing required fields: user, password, confirmedPassword",
+        });
+    }
+
+    next();
+}
+
+module.exports = { validateCreateUser, validateDeleteUser };

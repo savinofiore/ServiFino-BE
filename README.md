@@ -25,6 +25,7 @@ Entrare all'interno della cartella function:
 ## Endpoints
 - http://127.0.0.1:5001/servifino/us-central1/api
 - Creazione di un utente (POST): /create
+- Eliminazione di un utente (POST): /delete
 - Elenco di tutti gli utenti (GET): /users
 
 ### JSON per test Endpoints
@@ -36,6 +37,19 @@ Entrare all'interno della cartella function:
 "phoneNumber": "+391210456987",
 "photoURL": "https://example.com/photo.jpg",
 "disabled": false
+}
+#### /delete
+{
+"password": "SecurePassword123",
+"confirmedPassword": "SecurePassword123",
+"user": {
+"uid": "iX7DGh3MGzVTyrFsohyVKR2fpMX2",
+"email": "test1@example.com",
+"displayName": "John Doe",
+"phoneNumber": "+391210456987",
+"photoURL": "https://example.com/photo.jpg",
+"disabled": false
+}
 }
 
 ## Perché due file index.js?
