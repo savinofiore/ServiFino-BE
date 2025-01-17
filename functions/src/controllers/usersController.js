@@ -3,41 +3,20 @@ const User = require("../models/User");
 
 const createUser = async (req, res) => {
     try {
-        if (req.method !== "POST") {
-            return res.status(405).send({ error: "Method Not Allowed" });
-        }
-
         const { email, password, displayName, phoneNumber, photoURL, disabled } = req.body;
-
-        if (!email || !password || !displayName) {
-            return res.status(400).send({
-                error: "Email, password, and displayName are required",
-            });
-        }
-
-        // Usa la nuova classe User
+        // Crea l'istanza dell'utente usando la classe User
         const user = new User(email, password, displayName, phoneNumber, photoURL, disabled);
-
         // Crea l'utente in Firebase Authentication
         const createdUser = await admin.auth().createUser(user.toFirebaseAuthObject());
-
-        // Salva l'utente in Firestore
-        const userDoc = {
-            uid: createdUser.uid,
-            email: createdUser.email,
-            displayName: createdUser.displayName,
-            phoneNumber: createdUser.phoneNumber,
-            photoURL: createdUser.photoURL,
-            disabled: createdUser.disabled,
-        };
-
         // Salva i dettagli nel database Firestore
-        await admin.firestore().collection("users").doc(createdUser.uid).set(userDoc);
-
+        await admin.firestore().collection("users").doc(createdUser.uid).set({
+            ...user.toFirestoreObject(), // Metodo aggiunto alla classe User
+            uid: createdUser.uid, // Includi l'UID generato da Firebase Auth
+        });
         // Restituisce i dettagli dell'utente
         return res.status(201).send({
             message: "User created successfully",
-            user: userDoc,
+            user: { ...user.toFirestoreObject(), uid: createdUser.uid },
         });
     } catch (error) {
         console.error("Error creating user:", error);
@@ -47,37 +26,20 @@ const createUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     try {
-        if (req.method !== "POST") {
-            return res.status(405).send({ error: "Method Not Allowed" });
-        }
-
         const { user, password, confirmedPassword } = req.body;
-
-        if (!user || !password || !confirmedPassword) {
-            if (password !== confirmedPassword) {
-                return res.status(400).send({
-                    error: "Password and confirmed password must be equal",
-                });
-            }
-            return res.status(400).send({
-                error: "User, password, and confirmed password are required",
-            });
-        }
-
-        if (!user.uid) {
-            return res.status(400).send({ error: "User UID is required" });
-        }
-
+        // Usa la classe User per raccogliere i dati dell'utente da eliminare
+        const userObj = new User(user.email, password, user.displayName, user.phoneNumber, user.photoURL, user.disabled);
         // Elimina l'utente da Firebase Authentication
-        await admin.auth().deleteUser(user.uid);
-
-        // Elimina il documento associato nel database Firestore
-        await admin.firestore().collection("users").doc(user.uid).delete();
-
-        // Operazione effettuata con successo
+        const deletedUser = await admin.auth().deleteUser(user.uid);
+        // Crea l'oggetto da salvare in Firestore
+        const userDoc = userObj.toFirestoreObject();
+        userDoc.uid = deletedUser.uid; // Aggiungi UID generato da Firebase
+        // Salva l'utente nel database Firestore (in caso di necessità di log)
+        await admin.firestore().collection("users").doc(userDoc.uid).set(userDoc);
+        // Restituisce il risultato dell'eliminazione
         return res.status(200).send({
             message: "User deleted successfully",
-            user: { user },
+            user: userDoc,
         });
     } catch (error) {
         console.error("Error deleting user:", error);
@@ -87,36 +49,19 @@ const deleteUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
-        // Controlla che il metodo HTTP sia POST
-        if (req.method !== "POST") {
-            return res.status(405).send({ error: "Method Not Allowed" });
-        }
-
         // Estrai i dati dalla richiesta
         const { user, displayName, phoneNumber } = req.body;
-
-        // Verifica la validità dei dati
-        if (!user || !user.uid || !displayName || !phoneNumber) {
-            return res.status(400).send({
-                error: "User UID, display name, and phone number are required",
-            });
-        }
-
-        console.log("updating...");
         // Aggiorna i dati dell'utente in Firebase Authentication
         const updatedUser = await admin.auth().updateUser(user.uid, {
             displayName: displayName,
             phoneNumber: phoneNumber,
         });
-
         // Aggiorna i dati nel database Firestore
         const userDocRef = admin.firestore().collection("users").doc(user.uid);
-
         await userDocRef.update({
             displayName: displayName,
             phoneNumber: phoneNumber,
         });
-
         // Restituisci il risultato
         return res.status(200).send({
             message: "User updated successfully",
@@ -132,7 +77,6 @@ const updateUser = async (req, res) => {
     }
 };
 
-
 const getUsers = async (req, res) => {
     try {
         // Logica per recuperare gli utenti (ad esempio, da Firestore)
@@ -142,4 +86,25 @@ const getUsers = async (req, res) => {
     }
 };
 
-module.exports = { createUser , getUsers, deleteUser, updateUser };
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        // Autenticazione utente con Firebase
+        const userRecord = await admin.auth().getUserByEmail(email);
+        // Prova a fare il login con la password dell'utente
+        const user = await admin.auth().signInWithEmailAndPassword(email, password);
+        // Se il login ha successo, restituisci un token o i dettagli dell'utente
+        const token = await user.getIdToken();
+        return res.status(200).send({
+            message: "User logged in successfully",
+            user: userRecord.toJSON(),
+            token: token, // Restituisci il token per autenticazione futura
+        });
+    } catch (error) {
+        console.error("Error logging in user:", error);
+        return res.status(500).send({ error: error.message });
+    }
+};
+
+
+module.exports = { createUser , getUsers, deleteUser, updateUser, loginUser };

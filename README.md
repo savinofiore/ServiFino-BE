@@ -23,13 +23,14 @@ Entrare all'interno della cartella function:
 - <b>Deploy functions firebase:</b> npm run deploy
 
 ## Endpoints
-- http://127.0.0.1:5001/servifino/us-central1/api
-- Creazione di un utente (POST): /create
-- Eliminazione di un utente (POST): /delete
-- Modifica dati di un utente (POST); /update
+http://127.0.0.1:5001/servifino/us-central1/api
 - Elenco di tutti gli utenti (GET): /users
+- Creazione di un utente (POST): /users/create
+- Eliminazione di un utente (POST): /users/delete
+- Modifica dati di un utente (POST); /users/update
+- Elenco di tutti i lavoratori (GET): /workers
 
-### JSON per test Endpoints
+### JSON per test Endpoints /users
 #### /create
 {
 "email": "test1@example.com",
@@ -64,6 +65,14 @@ Entrare all'interno della cartella function:
 "photoURL": "https://example.com/photo.jpg",
 "disabled": false
 }
+}
+
+### JSON per test Endpoints /workers
+#### /add
+{
+"userId": "6uuNxHOOtXhAqFflEDPOdpc1PhH2",
+"workId": "barman",
+"available": true
 }
 
 ## Perché due file index.js?

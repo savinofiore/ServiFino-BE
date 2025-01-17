@@ -2,7 +2,7 @@
 ## Implementazioni future
 - <s>aggiungere creazione user su db</s>
 - aggiungere token per le richieste in ingresso e in uscita?
-- aggiungere tutte le funzionalità degli utenti
+- <s>aggiungere tutte le funzionalità degli utenti</s>
 - categorizzare gli utenti, se come lavoratori o come locali
 
 ## Collections previste
@@ -11,5 +11,6 @@
 - careers: conterrà le carriere degli utenti e le loro valutazioni. Ogni carriera avrà l'id dell'utente e conterrà lo storico con le valutazioni per gli spot.
 - workers: utenti disponibili ad essere chiamati (prevedere flag). Gli utenti dovranno configurare il loro profilo come workers.
 - owners: utenti proprietari dei locali o servizi (prevedere flag).
+- works: lavori disponibili (barman, cameriere)
 
 ## Interazioni
