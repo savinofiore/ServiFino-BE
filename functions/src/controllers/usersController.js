@@ -45,7 +45,6 @@ const createUser = async (req, res) => {
     }
 };
 
-
 const deleteUser = async (req, res) => {
     try {
         if (req.method !== "POST") {
@@ -86,6 +85,54 @@ const deleteUser = async (req, res) => {
     }
 };
 
+const updateUser = async (req, res) => {
+    try {
+        // Controlla che il metodo HTTP sia POST
+        if (req.method !== "POST") {
+            return res.status(405).send({ error: "Method Not Allowed" });
+        }
+
+        // Estrai i dati dalla richiesta
+        const { user, displayName, phoneNumber } = req.body;
+
+        // Verifica la validità dei dati
+        if (!user || !user.uid || !displayName || !phoneNumber) {
+            return res.status(400).send({
+                error: "User UID, display name, and phone number are required",
+            });
+        }
+
+        console.log("updating...");
+        // Aggiorna i dati dell'utente in Firebase Authentication
+        const updatedUser = await admin.auth().updateUser(user.uid, {
+            displayName: displayName,
+            phoneNumber: phoneNumber,
+        });
+
+        // Aggiorna i dati nel database Firestore
+        const userDocRef = admin.firestore().collection("users").doc(user.uid);
+
+        await userDocRef.update({
+            displayName: displayName,
+            phoneNumber: phoneNumber,
+        });
+
+        // Restituisci il risultato
+        return res.status(200).send({
+            message: "User updated successfully",
+            user: {
+                uid: updatedUser.uid,
+                displayName: updatedUser.displayName,
+                phoneNumber: updatedUser.phoneNumber,
+            },
+        });
+    } catch (error) {
+        console.error("Error updating user:", error);
+        return res.status(500).send({ error: error.message });
+    }
+};
+
+
 const getUsers = async (req, res) => {
     try {
         // Logica per recuperare gli utenti (ad esempio, da Firestore)
@@ -94,4 +141,5 @@ const getUsers = async (req, res) => {
         res.status(500).send({ error: error.message });
     }
 };
-module.exports = { createUser , getUsers, deleteUser };
+
+module.exports = { createUser , getUsers, deleteUser, updateUser };

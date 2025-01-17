@@ -26,6 +26,7 @@ Entrare all'interno della cartella function:
 - http://127.0.0.1:5001/servifino/us-central1/api
 - Creazione di un utente (POST): /create
 - Eliminazione di un utente (POST): /delete
+- Modifica dati di un utente (POST); /update
 - Elenco di tutti gli utenti (GET): /users
 
 ### JSON per test Endpoints
@@ -44,6 +45,19 @@ Entrare all'interno della cartella function:
 "confirmedPassword": "SecurePassword123",
 "user": {
 "uid": "iX7DGh3MGzVTyrFsohyVKR2fpMX2",
+"email": "test1@example.com",
+"displayName": "John Doe",
+"phoneNumber": "+391210456987",
+"photoURL": "https://example.com/photo.jpg",
+"disabled": false
+}
+}
+#### /update
+{
+"displayName": "Mario Red",
+"phoneNumber": "+391210456985",
+"user": {
+"uid": "Iep0RXaticesACla6JEGRqyQU6f1",
 "email": "test1@example.com",
 "displayName": "John Doe",
 "phoneNumber": "+391210456987",

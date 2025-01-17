@@ -22,4 +22,14 @@ const validateDeleteUser = (req, res, next) => {
     next();
 }
 
-module.exports = { validateCreateUser, validateDeleteUser };
+const validateUpdateUser = (req, res, next) => {
+    const {user, displayName, phoneNumber} = req.body;
+    if(!user || !displayName || !phoneNumber){
+        return res.status(400).send({
+            error: "Missing required fields: user, displayName, phoneNumber",
+        });
+    }
+    next();
+}
+
+module.exports = { validateCreateUser, validateDeleteUser, validateUpdateUser };
