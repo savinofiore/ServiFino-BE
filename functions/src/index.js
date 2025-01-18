@@ -4,6 +4,7 @@ const admin = require("firebase-admin");
 // Routes
 const usersRoutes = require("./routes/usersRoutes");
 const workersRoutes = require("./routes/workersRoutes");
+const ownersRoutes = require("./routes/ownersRoutes");
 const startServer = require("./utils/startServer");
 
 const app = express();
@@ -25,6 +26,7 @@ try{
 // Endpoints
 app.use("/users", usersRoutes);
 app.use("/workers", workersRoutes);
+app.use("/owners", ownersRoutes)
 
 //Exports
 module.exports.admin = admin;

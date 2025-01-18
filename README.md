@@ -74,6 +74,12 @@ http://127.0.0.1:5001/servifino/us-central1/api
 "workId": "barman",
 "available": true
 }
+#### /update
+{
+"userId": "6uuNxHOOtXhAqFflEDPOdpc1PhH2",
+"workId": "barman",
+"available": false
+}
 
 ## Perché due file index.js?
 - functions/index.js è specifico per Firebase, che si occupa di esportare la funzione cloud.
