@@ -2,11 +2,10 @@
 
 const {loadWorks} = require("./loadWorks");
 
-async function startServer() {
+ function startServer(admin) {
     try {
         // Carica il set di lavori
-        await loadWorks();
-        console.log("Works set loaded successfully!");
+         loadWorks(admin);
     } catch (error) {
         console.error("Error loading works set:", error);
         process.exit(1); // Termina l'esecuzione del server in caso di errore
