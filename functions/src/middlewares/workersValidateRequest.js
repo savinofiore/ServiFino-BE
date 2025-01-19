@@ -1,6 +1,6 @@
-const {worksSet} = require("../utils/loadWorks");
+//const {worksSet} = require("../utils/loadWorks");
 
-const validateAddWorker = (req, res, next) => {
+const validateReqWorker = (req, res, next) => {
     if (req.method !== "POST") {
         return res.status(405).send({ error: "Method Not Allowed" });
     }
@@ -10,7 +10,7 @@ const validateAddWorker = (req, res, next) => {
     }
     next();
 }
-
+/*
 const validateUpdateWorker = (req, res, next) => {
     if (req.method !== "POST") {
         return res.status(405).send({ error: "Method Not Allowed" });
@@ -20,6 +20,6 @@ const validateUpdateWorker = (req, res, next) => {
         return res.status(400).send({ error: "Required parameter" });
     }
     next();
-}
+}*/
 
-module.exports = {validateAddWorker, validateUpdateWorker};
+module.exports = { validateReqWorker };

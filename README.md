@@ -81,6 +81,26 @@ http://127.0.0.1:5001/servifino/us-central1/api
 "available": false
 }
 
+### JSON per test Endpoints /owners
+#### /add
+{
+"userUid": "6uuNxHOOtXhAqFflEDPOdpc1PhH2",
+"activityName": "activityName",
+"activityDescription": "activityDescription,",
+"activityLocation": "activityLocation",
+"activityWebsite": "activityWebsite",
+"activityNumber": "activityNumber"
+}
+#### /update
+{
+"userUid": "6uuNxHOOtXhAqFflEDPOdpc1PhH2",
+"activityName": "test",
+"activityDescription": "activityDescription,",
+"activityLocation": "activityLocation",
+"activityWebsite": "activityWebsite",
+"activityNumber": "activityNumber"
+}
+
 ## Perché due file index.js?
 - functions/index.js è specifico per Firebase, che si occupa di esportare la funzione cloud.
 - src/index.js è il cuore della tua applicazione Express, che può essere facilmente testato o spostato su un altro ambiente (ad esempio, un server Node.js puro) senza dipendere da Firebase.

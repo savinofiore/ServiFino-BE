@@ -1,10 +1,10 @@
 const express = require("express");
 const {addWorker, updateWorker} = require("../controllers/workersController");
-const {validateAddWorker, validateUpdateWorker} = require("../middlewares/workersValidateRequest");
+const { validateReqWorker } = require("../middlewares/workersValidateRequest");
 const router = express.Router();
 
 
-router.post("/add", validateAddWorker ,addWorker);
-router.post("/update", validateUpdateWorker ,updateWorker);
+router.post("/add", validateReqWorker ,addWorker);
+router.post("/update", validateReqWorker ,updateWorker);
 
 module.exports = router;

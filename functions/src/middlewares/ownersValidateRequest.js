@@ -1,5 +1,5 @@
 
-const validateAddOwner = (req, res, next) => {
+const validateReqOwner = (req, res, next) => {
     if (req.method !== "POST") {
         return res.status(405).send({ error: "Method Not Allowed" });
     }
@@ -11,4 +11,5 @@ const validateAddOwner = (req, res, next) => {
 }
 
 
-module.exports = { validateAddOwner}
+
+module.exports = { validateReqOwner}
