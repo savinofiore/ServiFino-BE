@@ -1,11 +1,12 @@
 class User {
-    constructor(email, password, displayName, phoneNumber = null, photoURL = null, disabled = false) {
+    constructor(email, password, displayName, phoneNumber = null, photoURL = null, disabled = false, assignment = false) {
         this.email = email;
         this.password = password;
         this.displayName = displayName;
         this.phoneNumber = phoneNumber;
         this.photoURL = photoURL;
         this.disabled = disabled;
+        this.assignment = assignment;
     }
 
     // Formatta i dati per Firebase Authentication
@@ -28,6 +29,7 @@ class User {
             phoneNumber: this.phoneNumber,
             photoURL: this.photoURL,
             disabled: this.disabled,
+            assignment : this.assignment
         };
     }
 }

@@ -3,9 +3,9 @@ const User = require("../models/User");
 
 const createUser = async (req, res) => {
     try {
-        const { email, password, displayName, phoneNumber, photoURL, disabled } = req.body;
+        const { email, password, displayName, phoneNumber, photoURL, disabled, assignment } = req.body;
         // Crea l'istanza dell'utente usando la classe User
-        const user = new User(email, password, displayName, phoneNumber, photoURL, disabled);
+        const user = new User(email, password, displayName, phoneNumber, photoURL, disabled, assignment);
         // Crea l'utente in Firebase Authentication
         const createdUser = await admin.auth().createUser(user.toFirebaseAuthObject());
         // Salva i dettagli nel database Firestore
