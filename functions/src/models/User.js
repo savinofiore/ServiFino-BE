@@ -1,5 +1,5 @@
 class User {
-    constructor(email, password, displayName, phoneNumber = null, photoURL = null, disabled = false, assignment = false) {
+    constructor(email, password, displayName, phoneNumber = null, photoURL = null, disabled = false, assignment = false, work = null, isOwner = false) {
         this.email = email;
         this.password = password;
         this.displayName = displayName;
@@ -7,6 +7,8 @@ class User {
         this.photoURL = photoURL;
         this.disabled = disabled;
         this.assignment = assignment;
+        this.work = work;
+        this.isOwner = isOwner;
     }
 
     // Formatta i dati per Firebase Authentication
@@ -18,6 +20,8 @@ class User {
             phoneNumber: this.phoneNumber,
             photoURL: this.photoURL,
             disabled: this.disabled,
+            work : this.work,
+            isOwner : this.isOwner
         };
     }
 
@@ -29,7 +33,9 @@ class User {
             phoneNumber: this.phoneNumber,
             photoURL: this.photoURL,
             disabled: this.disabled,
-            assignment : this.assignment
+            assignment : this.assignment,
+            work: this.work,
+            isOwner : this.isOwner
         };
     }
 }
