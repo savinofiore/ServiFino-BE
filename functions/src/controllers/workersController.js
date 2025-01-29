@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
 const Worker = require("../models/Worker");
 
-const addWorker = async (req, res) => {
+/*const addWorker = async (req, res) => {
     try {
         const { userId, workId, available  } = req.body; // Prendi userId, workId e available dalla richiesta
         // Crea un oggetto worker
@@ -17,9 +17,37 @@ const addWorker = async (req, res) => {
         console.error("Error adding worker:", error);
         return res.status(500).send({ error: error.message });
     }
-};
+};*/
 
 const updateWorker = async (req, res) => {
+    try {
+        const { userId, workId, available } = req.body; // Prendi userId, workId e available dalla richiesta
+
+        // Verifica che i campi obbligatori siano presenti
+        if (!userId || !workId || available === undefined) {
+            return res.status(400).send({ error: "userId, workId e available sono obbligatori" });
+        }
+
+        // Aggiorna il campo 'work' e 'isAvailable' nel documento dell'utente
+        await admin.firestore().collection("users").doc(userId).update({
+            work: workId,
+            isAvailable: available,
+        });
+
+        // Restituisci una risposta di successo
+        return res.status(200).send({
+            message: "Work aggiornato con successo",
+            userId: userId,
+            workId: workId,
+            available: available,
+        });
+    } catch (error) {
+        console.error("Errore durante l'aggiornamento del lavoro:", error);
+        return res.status(500).send({ error: error.message });
+    }
+};
+
+/*const updateWorker = async (req, res) => {
     try{
         const { userId, workId, available  } = req.body;
         const workerToUpdate = new Worker(userId, workId, available);
@@ -33,8 +61,8 @@ const updateWorker = async (req, res) => {
         console.error("Error updating worker:", error);
         return res.status(500).send({ error: error.message });
     }
-}
+}*/
 
 
 
-module.exports = { addWorker, updateWorker }
+module.exports = { updateWorker }
