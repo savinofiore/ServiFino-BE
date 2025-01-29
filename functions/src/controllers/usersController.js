@@ -3,9 +3,9 @@ const User = require("../models/User");
 
 const createUser = async (req, res) => {
     try {
-        const { email, password, displayName, phoneNumber, photoURL, disabled, assignment, work , isOwner} = req.body;
+        const { email, password, displayName, phoneNumber, photoURL, disabled, assignment, work , isOwner, isAvailable} = req.body;
         // Crea l'istanza dell'utente usando la classe User
-        const user = new User(email, password, displayName, phoneNumber, photoURL, disabled, assignment, work, isOwner);
+        const user = new User(email, password, displayName, phoneNumber, photoURL, disabled, assignment, work, isOwner, isAvailable);
         // Crea l'utente in Firebase Authentication
         const createdUser = await admin.auth().createUser(user.toFirebaseAuthObject());
         // Salva i dettagli nel database Firestore
@@ -51,7 +51,7 @@ const deleteUser = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         // Estrai i dati dalla richiesta
-        const { user, displayName, phoneNumber , work} = req.body;
+        const { user, displayName, phoneNumber , work, isAvailable} = req.body;
         // Aggiorna i dati dell'utente in Firebase Authentication
         const updatedUser = await admin.auth().updateUser(user.uid, {
             displayName: displayName,
@@ -63,6 +63,7 @@ const updateUser = async (req, res) => {
             displayName: displayName,
             phoneNumber: phoneNumber,
             work: work,
+            isAvailable: isAvailable,
         });
         // Restituisci il risultato
         return res.status(200).send({
@@ -71,8 +72,9 @@ const updateUser = async (req, res) => {
                 uid: updatedUser.uid,
                 displayName: updatedUser.displayName,
                 phoneNumber: updatedUser.phoneNumber,
+                work: work,
+                isAvailable: isAvailable,
             },
-            work: work,
         });
     } catch (error) {
         console.error("Error updating user:", error);
