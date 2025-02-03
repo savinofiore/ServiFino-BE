@@ -108,3 +108,6 @@ http://127.0.0.1:5001/servifino/us-central1/api
 - Separation of Concerns: Ogni file ha un compito specifico.
 - Testabilità: Puoi testare facilmente l'app Express separatamente.
 - Portabilità: Se un giorno vuoi migrare da Firebase Functions a un altro servizio, dovrai solo modificare functions/index.js.
+
+## Trasformazione progetto
+Ho deciso di rimuovere express e usare le fuction di firebase, per una migliore implementazione con flutter nativo.

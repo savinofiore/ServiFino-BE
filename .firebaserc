@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "servifino"
-  }
+    "default": "servifino",
+    "prod": "servifino"
+  },
+  "targets": {},
+  "etags": {}
 }
