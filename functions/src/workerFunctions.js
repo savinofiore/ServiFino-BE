@@ -11,7 +11,7 @@ const updateWorker = v2.https.onRequest(async (req, res) => {
     if (!validateReqWorker(req, res)) return;
 
     try {
-        const { userId, workId, available } = req.body;
+        const { userId, workId, available } = req.body.data || req.body;
 
         // Verifica che il campo available sia definito
         if (available === undefined) {

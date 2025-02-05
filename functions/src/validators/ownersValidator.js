@@ -5,7 +5,7 @@ function validateReqOwner(req, res) {
         return false;
     }
 
-    const { userUid, activityName, activityDescription, activityLocation, activityNumber } = req.body;
+    const { userUid, activityName, activityDescription, activityLocation, activityNumber } = req.body.data || req.body;
 
     if (!userUid || !activityName || !activityDescription || !activityLocation || !activityNumber) {
         res.status(400).send({ error: "Required parameter missing" });

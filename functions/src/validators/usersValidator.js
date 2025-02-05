@@ -5,7 +5,7 @@ function validateCreateUser(req, res) {
         res.status(405).send({ error: "Method Not Allowed" });
         return false;
     }
-    const { email, password, displayName } = req.body;
+    const { email, password, displayName } = req.body.data || req.body;
     if (!email || !password || !displayName) {
         res.status(400).send({
             error: "Missing required fields: email, password, displayName",
@@ -21,7 +21,7 @@ function validateDeleteUser(req, res) {
         res.status(405).send({ error: "Method Not Allowed" });
         return false;
     }
-    const { user, password, confirmedPassword } = req.body;
+    const { user, password, confirmedPassword } = req.body.data || req.body;
     if (!user || !password || !confirmedPassword) {
         res.status(400).send({
             error: "User, password, and confirmed password are required",
@@ -43,7 +43,7 @@ function validateUpdateUser(req, res) {
         res.status(405).send({ error: "Method Not Allowed" });
         return false;
     }
-    const { user, displayName, phoneNumber } = req.body;
+    const { user, displayName, phoneNumber } = req.body.data || req.body;
     if (!user || !displayName || !phoneNumber) {
         res.status(400).send({
             error: "Missing required fields: user, displayName, phoneNumber",

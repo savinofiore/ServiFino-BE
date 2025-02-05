@@ -5,7 +5,7 @@ function validateReqWorker(req, res) {
         return false;
     }
 
-    const { userId, workId } = req.body;
+    const { userId, workId } = req.body.data || req.body;
     // Verifica che i parametri obbligatori siano presenti
     if (!userId || !workId) {
         res.status(400).send({ error: "I parametri userId e workId sono obbligatori" });

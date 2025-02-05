@@ -3,7 +3,7 @@ const v2 = require('firebase-functions/v2');
 const User = require("./models/User");
 const {validateCreateUser, validateDeleteUser, validateUpdateUser} = require("./validators/usersValidator");
 
-/**
+/*
  * Funzione per creare un utente
  */
 const createUser = v2.https.onRequest(async (req, res) => {
@@ -22,7 +22,7 @@ const createUser = v2.https.onRequest(async (req, res) => {
             work,
             isOwner,
             isAvailable,
-        } = req.body;
+        } = req.body.data || req.body;
 
         // Crea l'istanza dell'utente tramite la classe User
         const user = new User(
@@ -48,23 +48,26 @@ const createUser = v2.https.onRequest(async (req, res) => {
         });
 
         return res.status(201).send({
-            message: "User created successfully",
-            user: { ...user.toFirestoreObject(), uid: createdUser.uid },
+            data: {
+                message: "User created successfully",
+                user: { ...user.toFirestoreObject(), uid: createdUser.uid },
+            },
         });
     } catch (error) {
         console.error("Error creating user:", error.toString());
-        return res.status(500).send({ error: error.message });
+        return res.status(500).send(
+            {data: { error: error.message }}
+        );
     }
 });
-
-/**
+/*
  * Funzione per eliminare un utente
  */
 const deleteUser = v2.https.onRequest(async (req, res) => {
     if (!validateDeleteUser(req, res)) return;
 
     try {
-        const { user, password, confirmedPassword } = req.body;
+        const { user, password, confirmedPassword } = req.body.data || req.body;
 
         // Ricostruisce l'oggetto utente con la classe User
         const userObj = new User(
@@ -85,32 +88,35 @@ const deleteUser = v2.https.onRequest(async (req, res) => {
         await admin.firestore().collection("users").doc(userDoc.uid).set(userDoc);
 
         return res.status(200).send({
-            message: "User deleted successfully",
-            user: userDoc,
+            data: {
+                message: "User deleted successfully",
+                user: userDoc,
+            }
         });
     } catch (error) {
         console.error("Error deleting user:", error);
-        return res.status(500).send({ error: error.message });
+        return res.status(500).send({
+            data: { error: error.message }
+        });
     }
 });
-
-/**
+/*
  * Funzione per aggiornare un utente
  */
 const updateUser = v2.https.onRequest(async (req, res) => {
-    if (!validateUpdateUser(req, res)) return;
-
+    //if (!validateUpdateUser(req, res)) return;
+    console.log('Incoming: ', req.body.data );
     try {
-        const { user, displayName, phoneNumber, work, isAvailable } = req.body;
+        const { userId, displayName, phoneNumber, work, isAvailable } = req.body.data || req.body;
 
         // Aggiorna i dati in Firebase Authentication
-        const updatedUser = await admin.auth().updateUser(user.uid, {
+        const updatedUser = await admin.auth().updateUser(userId, {
             displayName: displayName,
             phoneNumber: phoneNumber,
         });
 
         // Aggiorna i dati in Firestore
-        const userDocRef = admin.firestore().collection("users").doc(user.uid);
+        const userDocRef = admin.firestore().collection("users").doc(userId);
         await userDocRef.update({
             displayName: displayName,
             phoneNumber: phoneNumber,
@@ -118,23 +124,28 @@ const updateUser = v2.https.onRequest(async (req, res) => {
             isAvailable: isAvailable,
         });
 
-        return res.status(200).send({
-            message: "User updated successfully",
-            user: {
-                uid: updatedUser.uid,
-                displayName: updatedUser.displayName,
-                phoneNumber: updatedUser.phoneNumber,
-                work: work,
-                isAvailable: isAvailable,
-            },
-        });
+        return res.status(200).send(
+            {
+                data: {
+                    message: "User updated successfully",
+                    user: {
+                        uid: updatedUser.uid,
+                        displayName: updatedUser.displayName,
+                        phoneNumber: updatedUser.phoneNumber,
+                        work: work,
+                        isAvailable: isAvailable,
+                    },
+                }
+            }
+        );
     } catch (error) {
         console.error("Error updating user:", error);
-        return res.status(500).send({ error: error.message });
+        return res.status(500).send(
+            {data:{ error: error.message }}
+        );
     }
 });
-
-/**
+/*
  * Funzione per recuperare gli utenti (placeholder)
  */
 const getUsers = v2.https.onRequest(async (req, res) => {
@@ -149,8 +160,7 @@ const getUsers = v2.https.onRequest(async (req, res) => {
         return res.status(500).send({ error: error.message });
     }
 });
-
-/**
+/*
  * Funzione per il login utente (nota: l'Admin SDK non supporta signInWithEmailAndPassword)
  */
 /*
