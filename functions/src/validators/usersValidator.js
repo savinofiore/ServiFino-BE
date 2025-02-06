@@ -43,10 +43,10 @@ function validateUpdateUser(req, res) {
         res.status(405).send({ error: "Method Not Allowed" });
         return false;
     }
-    const { user, displayName, phoneNumber } = req.body.data || req.body;
-    if (!user || !displayName || !phoneNumber) {
+    const { user, displayName } = req.body.data || req.body;
+    if (!user || !displayName) {
         res.status(400).send({
-            error: "Missing required fields: user, displayName, phoneNumber",
+            error: "Missing required fields: user, displayName",
         });
         return false;
     }

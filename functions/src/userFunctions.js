@@ -11,7 +11,6 @@ const {validateCreateUser, validateDeleteUser, validateUpdateUser} = require("./
 const createUser = v2.https.onRequest(async (req, res) => {
     cors( req, res, async properties => {
         if (!validateCreateUser(req, res)) return;
-
         try {
             const {
                 email,
@@ -60,6 +59,45 @@ const createUser = v2.https.onRequest(async (req, res) => {
 
     });
 });
+
+const updateUser = v2.https.onRequest(async (req, res) => {
+
+    cors( req, res, async properties => {
+        console.log('Incoming: ', req.body.data );
+        try {
+            const { userId, displayName, work, isAvailable } = req.body.data || req.body;
+
+            // Aggiorna i dati in Firebase Authentication
+            const updatedUser = await admin.auth().updateUser(userId, {
+                displayName: displayName,
+            });
+
+            // Aggiorna i dati in Firestore
+            const userDocRef = admin.firestore().collection("users").doc(userId);
+            await userDocRef.update({
+                displayName: displayName,
+                work: work,
+                isAvailable: isAvailable,
+            });
+
+            return res.status(200).send(
+                {
+                    data: {
+                        message: "User updated successfully",
+                    }
+                }
+            );
+        } catch (error) {
+            console.error("Error updating user:", error);
+            return res.status(500).send(
+                {data:{ error: error.message }}
+            );
+        }
+    });
+});
+
+
+
 /*
 
 const deleteUser = v2.https.onRequest(async (req, res) => {
@@ -100,48 +138,7 @@ const deleteUser = v2.https.onRequest(async (req, res) => {
     }
 });
 
-const updateUser = v2.https.onRequest(async (req, res) => {
-    //if (!validateUpdateUser(req, res)) return;
-    console.log('Incoming: ', req.body.data );
-    try {
-        const { userId, displayName, phoneNumber, work, isAvailable } = req.body.data || req.body;
 
-        // Aggiorna i dati in Firebase Authentication
-        const updatedUser = await admin.auth().updateUser(userId, {
-            displayName: displayName,
-            phoneNumber: phoneNumber,
-        });
-
-        // Aggiorna i dati in Firestore
-        const userDocRef = admin.firestore().collection("users").doc(userId);
-        await userDocRef.update({
-            displayName: displayName,
-            phoneNumber: phoneNumber,
-            work: work,
-            isAvailable: isAvailable,
-        });
-
-        return res.status(200).send(
-            {
-                data: {
-                    message: "User updated successfully",
-                    user: {
-                        uid: updatedUser.uid,
-                        displayName: updatedUser.displayName,
-                        phoneNumber: updatedUser.phoneNumber,
-                        work: work,
-                        isAvailable: isAvailable,
-                    },
-                }
-            }
-        );
-    } catch (error) {
-        console.error("Error updating user:", error);
-        return res.status(500).send(
-            {data:{ error: error.message }}
-        );
-    }
-});
 
 const getUsers = v2.https.onRequest(async (req, res) => {
     if (req.method !== "GET") {
@@ -184,5 +181,5 @@ const loginUser = onRequest(async (req, res) => {
 
 
 
-module.exports = { createUser, /*createUserTest,deleteUser, updateUser, getUsers */};
+module.exports = { createUser, updateUser /*createUserTest,deleteUser, , getUsers */};
 
