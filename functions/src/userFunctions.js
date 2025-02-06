@@ -9,8 +9,7 @@ const {validateCreateUser, validateDeleteUser, validateUpdateUser} = require("./
  * Funzione per creare un utente
 */
 const createUser = v2.https.onRequest(async (req, res) => {
-
-    cors( req, res, async () => {
+    cors( req, res, async properties => {
         if (!validateCreateUser(req, res)) return;
 
         try {
@@ -18,10 +17,7 @@ const createUser = v2.https.onRequest(async (req, res) => {
                 email,
                 password,
                 displayName,
-                phoneNumber, // Questo campo è opzionale
-                photoURL,
                 disabled,
-                //assignment,
                 work,
                 isOwner,
                 isAvailable,
@@ -33,14 +29,15 @@ const createUser = v2.https.onRequest(async (req, res) => {
                 password,
                 displayName,
                 disabled || false,
-                //assignment,
                 work,
                 isOwner,
                 isAvailable
             );
 
             // Crea l'utente in Firebase Authentication
-            const createdUser = await admin.auth().createUser(user.toFirebaseAuthObject());
+            const createdUser = await admin.auth().createUser(
+                    {email: user.email, password: user.password, displayName: user.displayName, disabled: false},
+                );
 
             // Salva i dettagli su Firestore
             await admin.firestore().collection("users").doc(createdUser.uid).set({
@@ -62,12 +59,9 @@ const createUser = v2.https.onRequest(async (req, res) => {
         }
 
     });
-    // Valida i campi in ingresso (escludendo phoneNumber dalla validazione obbligatoria)
-
 });
 /*
- * Funzione per eliminare un utente
- */
+
 const deleteUser = v2.https.onRequest(async (req, res) => {
     if (!validateDeleteUser(req, res)) return;
 
@@ -105,9 +99,7 @@ const deleteUser = v2.https.onRequest(async (req, res) => {
         });
     }
 });
-/*
- * Funzione per aggiornare un utente
- */
+
 const updateUser = v2.https.onRequest(async (req, res) => {
     //if (!validateUpdateUser(req, res)) return;
     console.log('Incoming: ', req.body.data );
@@ -150,9 +142,7 @@ const updateUser = v2.https.onRequest(async (req, res) => {
         );
     }
 });
-/*
- * Funzione per recuperare gli utenti (placeholder)
- */
+
 const getUsers = v2.https.onRequest(async (req, res) => {
     if (req.method !== "GET") {
         res.status(405).send("Method Not Allowed");
@@ -165,9 +155,7 @@ const getUsers = v2.https.onRequest(async (req, res) => {
         return res.status(500).send({ error: error.message });
     }
 });
-/*
- * Funzione per il login utente (nota: l'Admin SDK non supporta signInWithEmailAndPassword)
- */
+
 /*
 const loginUser = onRequest(async (req, res) => {
     if (req.method !== "POST") {
@@ -194,5 +182,7 @@ const loginUser = onRequest(async (req, res) => {
     }
 });*/
 
-module.exports = { createUser, /*createUserTest,*/ deleteUser, updateUser, getUsers };
+
+
+module.exports = { createUser, /*createUserTest,deleteUser, updateUser, getUsers */};
 

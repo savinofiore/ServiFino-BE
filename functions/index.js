@@ -4,7 +4,7 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 
 // Importa le funzioni degli user
-const { createUser, deleteUser, updateUser, getUsers/*, createUserTest*/} = require("./src/userFunctions");
+const { createUser/*, deleteUser, updateUser, getUsers, createUserTest*/} = require("./src/userFunctions");
 // Importa le funzioni dei worker
 const { updateWorker } = require('./src/workerFunctions');
 // Importa le funzioni degli owner
