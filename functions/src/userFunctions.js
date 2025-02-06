@@ -1,64 +1,69 @@
 const admin = require("firebase-admin");
+const cors = require("cors")({ origin: true });
+
 const v2 = require('firebase-functions/v2');
 const User = require("./models/User");
 const {validateCreateUser, validateDeleteUser, validateUpdateUser} = require("./validators/usersValidator");
 
 /*
  * Funzione per creare un utente
- */
+*/
 const createUser = v2.https.onRequest(async (req, res) => {
-    // Valida i campi in ingresso
-    if (!validateCreateUser(req, res)) return;
 
-    try {
-        const {
-            email,
-            password,
-            displayName,
-            phoneNumber,
-            photoURL,
-            disabled,
-            assignment,
-            work,
-            isOwner,
-            isAvailable,
-        } = req.body.data || req.body;
+    cors( req, res, async () => {
+        if (!validateCreateUser(req, res)) return;
 
-        // Crea l'istanza dell'utente tramite la classe User
-        const user = new User(
-            email,
-            password,
-            displayName,
-            phoneNumber,
-            photoURL,
-            disabled,
-            assignment,
-            work,
-            isOwner,
-            isAvailable
-        );
+        try {
+            const {
+                email,
+                password,
+                displayName,
+                phoneNumber, // Questo campo è opzionale
+                photoURL,
+                disabled,
+                //assignment,
+                work,
+                isOwner,
+                isAvailable,
+            } = req.body.data || req.body;
 
-        // Crea l'utente in Firebase Authentication
-        const createdUser = await admin.auth().createUser(user.toFirebaseAuthObject());
+            // Crea l'istanza dell'utente tramite la classe User
+            const user = new User(
+                email,
+                password,
+                displayName,
+                disabled || false,
+                //assignment,
+                work,
+                isOwner,
+                isAvailable
+            );
 
-        // Salva i dettagli su Firestore
-        await admin.firestore().collection("users").doc(createdUser.uid).set({
-            ...user.toFirestoreObject(),
-            uid: createdUser.uid,
-        });
+            // Crea l'utente in Firebase Authentication
+            const createdUser = await admin.auth().createUser(user.toFirebaseAuthObject());
 
-        return res.status(201).send({
-            data: {
-                message: "User created successfully",
-                user: { ...user.toFirestoreObject(), uid: createdUser.uid },
-            },
-        });
-    } catch (error) {
-        console.error("Error creating user:", error.toString());
-        return res.status(500).send(
-            {data: { error: error.message }}
-        );
-    }
+            // Salva i dettagli su Firestore
+            await admin.firestore().collection("users").doc(createdUser.uid).set({
+                ...user.toFirestoreObject(),
+                uid: createdUser.uid,
+            });
+
+            return res.status(201).send({
+                data: {
+                    message: "User created successfully",
+                    user: {...user.toFirestoreObject(), uid: createdUser.uid},
+                },
+            });
+        } catch (error) {
+            console.error("Error creating user:", error.toString());
+            return res.status(500).send(
+                {data: {error: error.message}}
+            );
+        }
+
+    });
+    // Valida i campi in ingresso (escludendo phoneNumber dalla validazione obbligatoria)
+
 });
 /*
  * Funzione per eliminare un utente
@@ -189,5 +194,5 @@ const loginUser = onRequest(async (req, res) => {
     }
 });*/
 
-module.exports = { createUser, deleteUser, updateUser, getUsers };
+module.exports = { createUser, /*createUserTest,*/ deleteUser, updateUser, getUsers };
 

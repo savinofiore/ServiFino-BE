@@ -1,12 +1,12 @@
 class User {
-    constructor(email, password, displayName, phoneNumber = null, photoURL = null, disabled = false, assignment = false, work = null, isOwner = false, isAvailable = true) {
+    constructor(email, password, displayName,  disabled = false, work = null, isOwner = false, isAvailable = true) {
         this.email = email;
         this.password = password;
         this.displayName = displayName;
-        this.phoneNumber = phoneNumber;
-        this.photoURL = photoURL;
+        //this.phoneNumber = phoneNumber;
+        //this.photoURL = photoURL;
         this.disabled = disabled;
-        this.assignment = assignment;
+        //this.assignment = assignment;
         this.work = work;
         this.isOwner = isOwner;
         this.isAvailable = isAvailable;
@@ -18,12 +18,12 @@ class User {
             email: this.email,
             password: this.password,
             displayName: this.displayName,
-            phoneNumber: this.phoneNumber,
-            photoURL: this.photoURL,
-            disabled: this.disabled,
-            work : this.work,
-            isOwner : this.isOwner,
-            isAvailable : this.isAvailable
+            //phoneNumber: this.phoneNumber,
+            //photoURL: this.photoURL,
+            //disabled: this.disabled,
+            //work : this.work,
+            //isOwner : this.isOwner,
+            //isAvailable : this.isAvailable
         };
     }
 
@@ -32,10 +32,10 @@ class User {
         return {
             email: this.email,
             displayName: this.displayName,
-            phoneNumber: this.phoneNumber,
-            photoURL: this.photoURL,
+            //phoneNumber: this.phoneNumber,
+            //photoURL: this.photoURL,
             disabled: this.disabled,
-            assignment : this.assignment,
+            //assignment : this.assignment,
             work: this.work,
             isOwner : this.isOwner,
             isAvailable: this.isAvailable
