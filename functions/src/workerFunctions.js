@@ -1,14 +1,20 @@
 const admin = require("firebase-admin");
 const v2 = require('firebase-functions/v2');
-const {validateReqWorker} = require("./validators/workersValidator");
+const cors = require("cors")({ origin: true });
+const User = require("./models/User");
+const {log} = require("firebase-functions/logger");
 
-/**
+
+/*
+*
  * Funzione per aggiornare il lavoro di un utente.
  * Richiede nel body: userId, workId e available (il quale non deve essere undefined)
- */
+
 const updateWorker = v2.https.onRequest(async (req, res) => {
+    cors( req, res, async properties => {
+
     // Applica il validator: se fallisce, esce subito
-    if (!validateReqWorker(req, res)) return;
+    //if (!validateReqWorker(req, res)) return;
 
     try {
         const { userId, workId, available } = req.body.data || req.body;
@@ -35,6 +41,12 @@ const updateWorker = v2.https.onRequest(async (req, res) => {
         console.error("Errore durante l'aggiornamento del lavoro:", error);
         return res.status(500).send({ error: error.message });
     }
-});
+})});
 
-module.exports = { updateWorker };
+module.exports = { updateWorker };*/
+
+
+
+
+
+module.exports = {  };

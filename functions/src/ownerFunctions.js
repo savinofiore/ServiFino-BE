@@ -1,51 +1,126 @@
-
 const admin = require("firebase-admin");
 const v2 = require('firebase-functions/v2');
-const { validateReqOwner } = require("./validators/ownersValidator");
 const Owner = require("./models/Owner");
+const User = require("./models/User");
+const Reservation = require("./models/Reservation");
+//const ReservationStatus = require("./models/ReservationStatus");
+const cors = require("cors")({ origin: true });
 
-/*
+/**
  * Funzione unificata per aggiungere o aggiornare un Owner
  */
 const addOrUpdateOwner = v2.https.onRequest(async (req, res) => {
-    if (!validateReqOwner(req, res)) return;
+    //if (!validateReqOwner(req, res)) return;
+    cors( req, res, async properties => {
+        try {
+            const { userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber } = req.body.data || req.body;
+            const owner = new Owner(userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber);
+            // Riferimento al documento Firestore
+            const ownerDocRef = admin.firestore().collection("owners").doc(userUid);
 
-    try {
-        const { userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber } = req.body.data || req.body;
+            // Verifica se l'Owner esiste già
+            const ownerDoc = await ownerDocRef.get();
 
-        // Crea un'istanza di Owner con i dati forniti
-        const owner = new Owner(userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber);
-
-        // Riferimento al documento Firestore
-        const ownerDocRef = admin.firestore().collection("owners").doc(userUid);
-
-        // Verifica se l'Owner esiste già
-        const ownerDoc = await ownerDocRef.get();
-
-        if (ownerDoc.exists) {
-            // Se l'Owner esiste, aggiorna il documento
-            await ownerDocRef.update(owner.toFirestoreObject());
-            return res.status(200).send({
-                data: {
-                    message: "Owner added successfully",
-                    owner:owner.toFirestoreObject(),
-                }
-            });
-        } else {
-            // Se l'Owner non esiste, crea un nuovo documento
-            await ownerDocRef.set(owner.toFirestoreObject());
-            return res.status(201).send({
-                data: {
-                    message: "Owner added successfully",
-                    owner:owner.toFirestoreObject(),
-                }
-                //ownerId: ownerDocRef.id,
-            });
+            if (ownerDoc.exists) {
+                // Se l'Owner esiste, aggiorna il documento
+                await ownerDocRef.update(owner.toFirestoreObject());
+                return res.status(200).send({
+                    data: {
+                        message: "Owner added successfully",
+                        owner:owner.toFirestoreObject(),
+                    }
+                });
+            } else {
+                // Se l'Owner non esiste, crea un nuovo documento
+                await ownerDocRef.set(owner.toFirestoreObject());
+                return res.status(201).send({
+                    data: {
+                        message: "Owner added successfully",
+                        owner:owner.toFirestoreObject(),
+                    }
+                    //ownerId: ownerDocRef.id,
+                });
+            }
+        } catch (e) {
+            console.error("Error in addOrUpdateOwner:", e);
+            return res.status(500).send({ message: e.message });
         }
-    } catch (e) {
-        console.error("Error in addOrUpdateOwner:", e);
-        return res.status(500).send({ message: e.message });
-    }
+    })
 });
 
-module.exports = {addOrUpdateOwner};
+/** Funzione per recuperare tutti gli utenti con isOwner = false
+ */
+const getNonOwnerUsers = v2.https.onRequest(async (req, res) => {
+    cors(req, res, async () => {
+        try {
+            // Recupera tutti gli utenti dalla collezione "users" dove isOwner è false
+            const usersSnapshot = await admin.firestore()
+                .collection("users")
+                .where("isOwner", "==", false)
+                .where("isAvailable", "==", true)
+                .get();
+
+            // Se non ci sono utenti, restituisci un array vuoto
+            if (usersSnapshot.empty) {
+                return res.status(200).send({
+                    data: {
+                        message: "No non-owner users found",
+                        users: []
+                    }
+                });
+            }
+            // Mappa i documenti recuperati in un array di oggetti utente
+            const users = [];
+            usersSnapshot.forEach(doc => {
+                const userData = doc.data();
+                users.push({
+                    uid: doc.id,
+                    ...userData
+                });
+            });
+            // Restituisci gli utenti trovati
+            return res.status(200).send({
+                data: {
+                    message: "Non-owner users retrieved successfully",
+                    users: users
+                }
+            });
+        } catch (error) {
+            console.error("Error retrieving non-owner users:", error);
+            return res.status(500).send({
+                data: { error: error.message }
+            });
+        }
+    });
+});
+
+/** Funzione per prenotare un'utente
+ * */
+const addReservation = v2.https.onRequest(async (req, res) => {
+    cors(req, res, async () => {
+        try {
+            // Estrai i dati dalla richiesta
+            const { workerId, owner, bookDate, reservationStatus, rating } = req.body.data || req.body;
+            // Crea un'istanza di Reservation
+            const reservation = new Reservation(workerId, owner, bookDate, reservationStatus, rating);
+            // Riferimento al documento Firestore per la prenotazione
+            const reservationsRef = admin.firestore().collection("reservations").doc();
+            // Salva la prenotazione in Firestore utilizzando il metodo toFirestoreObject
+            await reservationsRef.set(reservation.toFirestoreObject());
+            // Risposta di successo
+            return res.status(201).send({
+                data: {
+                    message: "Reservation booked successfully",
+                    bookingId: reservationsRef.id,
+                    reservation: reservation.toFirestoreObject(),
+                }
+            });
+        } catch (e) {
+            console.error("Error in booking reservation:", e);
+            return res.status(500).send({ message: e.message });
+        }
+    });
+});
+
+
+module.exports = {addOrUpdateOwner, getNonOwnerUsers, addReservation};

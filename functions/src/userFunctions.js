@@ -1,9 +1,7 @@
 const admin = require("firebase-admin");
 const cors = require("cors")({ origin: true });
-
 const v2 = require('firebase-functions/v2');
 const User = require("./models/User");
-const {validateCreateUser, validateDeleteUser, validateUpdateUser} = require("./validators/usersValidator");
 
 /*
  * Funzione per creare un utente

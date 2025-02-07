@@ -11,22 +11,6 @@ class User {
         this.isOwner = isOwner;
         this.isAvailable = isAvailable;
     }
-
-    // Formatta i dati per Firebase Authentication
-    /*toFirebaseAuthObject() {
-        return {
-            email: this.email,
-            password: this.password,
-            displayName: this.displayName,
-            //phoneNumber: this.phoneNumber,
-            //photoURL: this.photoURL,
-            disabled: this.disabled,
-            work : this.work,
-            isOwner : this.isOwner,
-            isAvailable : this.isAvailable
-        };
-    }*/
-
     // Formatta i dati per Firestore
     toFirestoreObject() {
         return {
