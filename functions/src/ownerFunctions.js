@@ -100,9 +100,9 @@ const addReservation = v2.https.onRequest(async (req, res) => {
     cors(req, res, async () => {
         try {
             // Estrai i dati dalla richiesta
-            const { workerId, owner, bookDate, reservationStatus, rating } = req.body.data || req.body;
+            const { user, owner, reservationDate, reservationStatus, rating , message} = req.body.data || req.body;
             // Crea un'istanza di Reservation
-            const reservation = new Reservation(workerId, owner, bookDate, reservationStatus, rating);
+            const reservation = new Reservation(user, owner, reservationDate, reservationStatus, rating, message);
             // Riferimento al documento Firestore per la prenotazione
             const reservationsRef = admin.firestore().collection("reservations").doc();
             // Salva la prenotazione in Firestore utilizzando il metodo toFirestoreObject
@@ -123,4 +123,61 @@ const addReservation = v2.https.onRequest(async (req, res) => {
 });
 
 
-module.exports = {addOrUpdateOwner, getNonOwnerUsers, addReservation};
+const getReservationsSent = v2.https.onRequest(async (req, res) => {
+    cors(req, res, async () => {
+        try {
+            console.log('Richiesta ricevuta:', req.body); // Log della richiesta
+
+            // Estrai l'userId dalla richiesta
+            const { userId } = req.body.data || req.body;
+
+            if (!userId) {
+                console.error('UserId mancante nella richiesta');
+                return res.status(400).send({ message: "UserId is required" });
+            }
+
+            console.log('UserId ricevuto:', userId); // Log dell'userId
+
+
+            // Riferimento alla collezione Firestore delle prenotazioni
+            const reservationsRef = admin.firestore().collection("reservations");
+
+            // Esegui la query per ottenere le prenotazioni in attesa per l'utente
+            const snapshot = await reservationsRef
+                .where("owner.userUid", "==", userId)
+                .get();
+
+            console.log('Prenotazioni trovate:', snapshot.size); // Log del numero di prenotazioni
+
+            // Se non ci sono prenotazioni, restituisci un array vuoto
+            if (snapshot.empty) {
+                return res.status(200).send({ data: [] });
+            }
+
+            // Estrai le prenotazioni e formattale per la risposta
+            const reservations = [];
+            snapshot.forEach(doc => {
+                const reservation = doc.data();
+                reservations.push({
+                    id: doc.id,
+                    ...reservation
+                });
+            });
+
+            // Risposta di successo con la lista delle prenotazioni
+            return res.status(200).send({ data: reservations });
+        } catch (e) {
+            console.error("Error retrieving reservations:", e);
+            return res.status(500).send({ message: e.message });
+        }
+    });
+});
+
+
+
+
+
+
+
+
+module.exports = {addOrUpdateOwner, getNonOwnerUsers, addReservation, getReservationsSent};

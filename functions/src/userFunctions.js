@@ -8,7 +8,6 @@ const User = require("./models/User");
 */
 const createUser = v2.https.onRequest(async (req, res) => {
     cors( req, res, async properties => {
-        if (!validateCreateUser(req, res)) return;
         try {
             const {
                 email,
@@ -94,8 +93,6 @@ const updateUser = v2.https.onRequest(async (req, res) => {
     });
 });
 
-
-
 /*
 
 const deleteUser = v2.https.onRequest(async (req, res) => {
@@ -176,8 +173,6 @@ const loginUser = onRequest(async (req, res) => {
         return res.status(500).send({ error: error.message });
     }
 });*/
-
-
 
 module.exports = { createUser, updateUser /*createUserTest,deleteUser, , getUsers */};
 
