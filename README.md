@@ -11,11 +11,6 @@ Questo backend è sviluppato con **Firebase Functions** e gestisce la logica per
     - [Users](#users)
     - [Owner](#owner)
     - [Worker](#worker)
-- [Installazione e Avvio](#installazione-e-avvio)
-- [Configurazione](#configurazione)
-- [Deploy](#deploy)
-- [Contributi](#contributi)
-- [Licenza](#licenza)
 
 ---
 
