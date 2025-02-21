@@ -1,4 +1,4 @@
-# Nome del Progetto - Backend
+# ServiFino - Backend
 
 Questo backend è sviluppato con **Firebase Functions** e gestisce la logica per la creazione e gestione di utenti, prenotazioni e ruoli (Owner/Worker).
 
