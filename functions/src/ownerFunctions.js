@@ -141,14 +141,10 @@ const getReservationsSent = v2.https.onRequest(async (req, res) => {
 
             // Riferimento alla collezione Firestore delle prenotazioni
             const reservationsRef = admin.firestore().collection("reservations");
-
             // Esegui la query per ottenere le prenotazioni in attesa per l'utente
             const snapshot = await reservationsRef
                 .where("owner.userUid", "==", userId)
                 .get();
-
-            console.log('Prenotazioni trovate:', snapshot.size); // Log del numero di prenotazioni
-
             // Se non ci sono prenotazioni, restituisci un array vuoto
             if (snapshot.empty) {
                 return res.status(200).send({ data: [] });
