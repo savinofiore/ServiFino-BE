@@ -1,113 +1,104 @@
-# ServiFino-BE
-ServiFino Back-End
+# Nome del Progetto - Backend
 
-## Panoramica Servifino
-ServiFino è un servizio per la prenotazione e la gestione di lavoratori specializzati nel campo ristorazione e bar.
-Consente di prenotare e richiedere in modo smart e rapido personale. Chiunque può registrarsi e prestare servizio ai 
-locali aderenti all'iniziativa.
+Questo backend è sviluppato con **Firebase Functions** e gestisce la logica per la creazione e gestione di utenti, prenotazioni e ruoli (Owner/Worker).
 
-## Frameworks e tools utilizzati
-- Firebase function
-- Express
-- Node
-- Git
+---
 
-## Librerie implementate
-- CORS (middleware cors, consente di gestire le richieste in ingresso al server)
-- firebase-admin (consente accesso a db firebase)
+## Sommario
 
+- [Struttura del Progetto](#struttura-del-progetto)
+- [Funzionalità Principali](#funzionalità-principali)
+    - [Users](#users)
+    - [Owner](#owner)
+    - [Worker](#worker)
+- [Installazione e Avvio](#installazione-e-avvio)
+- [Configurazione](#configurazione)
+- [Deploy](#deploy)
+- [Contributi](#contributi)
+- [Licenza](#licenza)
 
-## Comandi utili
-Entrare all'interno della cartella function:
-- <b>Lanciare emulatore firebase:</b> npm run serve
-- <b>Deploy functions firebase:</b> npm run deploy
+---
 
-## Endpoints
-http://127.0.0.1:5001/servifino/us-central1/api
-- Elenco di tutti gli utenti (GET): /users
-- Creazione di un utente (POST): /users/create
-- Eliminazione di un utente (POST): /users/delete
-- Modifica dati di un utente (POST); /users/update
-- Elenco di tutti i lavoratori (GET): /workers
+## Struttura del Progetto
 
-### JSON per test Endpoints /users
-#### /create
-{
-"email": "test1@example.com",
-"password": "SecurePassword123",
-"displayName": "John Doe",
-"phoneNumber": "+391210456987",
-"photoURL": "https://example.com/photo.jpg",
-"disabled": false
-}
-#### /delete
-{
-"password": "SecurePassword123",
-"confirmedPassword": "SecurePassword123",
-"user": {
-"uid": "iX7DGh3MGzVTyrFsohyVKR2fpMX2",
-"email": "test1@example.com",
-"displayName": "John Doe",
-"phoneNumber": "+391210456987",
-"photoURL": "https://example.com/photo.jpg",
-"disabled": false
-}
-}
-#### /update
-{
-"displayName": "Mario Red",
-"phoneNumber": "+391210456985",
-"user": {
-"uid": "Iep0RXaticesACla6JEGRqyQU6f1",
-"email": "test1@example.com",
-"displayName": "John Doe",
-"phoneNumber": "+391210456987",
-"photoURL": "https://example.com/photo.jpg",
-"disabled": false
-}
-}
+La cartella principale contiene i file di configurazione di Firebase e il codice delle **Cloud Functions** all’interno di `src/`.
 
-### JSON per test Endpoints /workers
-#### /add
-{
-"userId": "6uuNxHOOtXhAqFflEDPOdpc1PhH2",
-"workId": "barman",
-"available": true
-}
-#### /update
-{
-"userId": "6uuNxHOOtXhAqFflEDPOdpc1PhH2",
-"workId": "barman",
-"available": false
-}
+```bash
+.
+├── firebase.json           # Configurazioni per Firebase
+├── .firebaserc             # File di configurazione del progetto Firebase
+├── firestore.indexes.json  # Indici Firestore (se configurati)
+├── firestore.rules         # Regole di sicurezza Firestore
+├── package.json            # Dipendenze e script di progetto
+├── src/
+│   ├── models/
+│   │   ├── Owner.js
+│   │   ├── Reservation.js
+│   │   ├── ReservationStatus.js
+│   │   ├── User.js
+│   │   ├── ownerFunctions.js
+│   │   ├── userFunctions.js
+│   │   └── workerFunctions.js
+│   ├── index.js            # Punto di ingresso delle funzioni
+│   └── ...
+├── README.md               # Questo file
+└── ...
+```
 
-### JSON per test Endpoints /owners
-#### /add
-{
-"userUid": "6uuNxHOOtXhAqFflEDPOdpc1PhH2",
-"activityName": "activityName",
-"activityDescription": "activityDescription,",
-"activityLocation": "activityLocation",
-"activityWebsite": "activityWebsite",
-"activityNumber": "activityNumber"
-}
-#### /update
-{
-"userUid": "6uuNxHOOtXhAqFflEDPOdpc1PhH2",
-"activityName": "test",
-"activityDescription": "activityDescription,",
-"activityLocation": "activityLocation",
-"activityWebsite": "activityWebsite",
-"activityNumber": "activityNumber"
-}
+### Cartelle Principali
 
-## Perché due file index.js?
-- functions/index.js è specifico per Firebase, che si occupa di esportare la funzione cloud.
-- src/index.js è il cuore della tua applicazione Express, che può essere facilmente testato o spostato su un altro ambiente (ad esempio, un server Node.js puro) senza dipendere da Firebase.
-### Vantaggi
-- Separation of Concerns: Ogni file ha un compito specifico.
-- Testabilità: Puoi testare facilmente l'app Express separatamente.
-- Portabilità: Se un giorno vuoi migrare da Firebase Functions a un altro servizio, dovrai solo modificare functions/index.js.
+- **models/**  
+  Contiene i file JavaScript che definiscono le entità (Owner, User, Reservation) e le funzioni principali per gestirle.
+    - `Owner.js`, `Reservation.js`, `ReservationStatus.js`, `User.js`: definiscono la struttura e i metodi dei vari modelli.
+    - `ownerFunctions.js`, `userFunctions.js`, `workerFunctions.js`: raggruppano le funzioni principali di **Owner**, **User** e **Worker**.
 
-## Trasformazione progetto
-Ho deciso di rimuovere express e usare le fuction di firebase, per una migliore implementazione con flutter nativo.
+- **index.js**  
+  Qui vengono importate e inizializzate tutte le funzioni che verranno esposte come **Firebase Functions**.
+
+---
+
+## Funzionalità Principali
+
+Di seguito un elenco sintetico delle funzioni principali esposte dal backend:
+
+### Users
+
+```js
+// In userFunctions.js
+exports.createUser = createUser;
+exports.updateUser = updateUser;
+```
+
+- **createUser**: Crea un nuovo utente nel database.
+- **updateUser**: Aggiorna i dati di un utente esistente.
+
+### Owner
+
+```js
+// In ownerFunctions.js
+exports.addOrUpdateOwner = addOrUpdateOwner;
+exports.getNonOwnerUsers = getNonOwnerUsers;
+exports.addReservation = addReservation;
+exports.getReservationsSent = getReservationsSent;
+// (Previsto: funzioni per modificare e cancellare prenotazioni)
+```
+
+- **addOrUpdateOwner**: Crea o aggiorna le informazioni di un Owner.
+- **getNonOwnerUsers**: Restituisce la lista degli utenti che non sono Owner (ovvero i Worker).
+- **addReservation**: Permette di aggiungere una nuova prenotazione.
+- **getReservationsSent**: Restituisce la lista di prenotazioni inviate (o gestite) dall’Owner.
+- *(In arrivo)* Funzioni per modificare o cancellare prenotazioni esistenti.
+
+### Worker
+
+```js
+// In workerFunctions.js
+exports.getReservationsWaitingByUserId = getReservationsWaitingByUserId;
+exports.updateReservationStatus = updateReservationStatus;
+```
+
+- **getReservationsWaitingByUserId**: Restituisce la lista delle prenotazioni in stato “waiting” per uno specifico Worker.
+- **updateReservationStatus**: Aggiorna lo stato di una prenotazione (ad esempio, accettata, rifiutata, completata).
+
+---
+
