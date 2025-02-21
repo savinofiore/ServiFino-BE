@@ -7,10 +7,19 @@ Questo backend è sviluppato con **Firebase Functions** e gestisce la logica per
 ## Sommario
 
 - [Struttura del Progetto](#struttura-del-progetto)
+- [Documentazione Postman](#documentazione-postman)
 - [Funzionalità Principali](#funzionalità-principali)
     - [Users](#users)
     - [Owner](#owner)
     - [Worker](#worker)
+
+---
+
+## Documentazione Postman
+
+È disponibile una collezione Postman che illustra le principali richieste verso le **Firebase Functions** (endpoint, parametri, body di esempio), che si
+può consultare al seguente link:  
+[Documentazione Postman](https://documenter.getpostman.com/view/19383680/2sAYdZuuPD)
 
 ---
 
