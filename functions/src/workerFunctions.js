@@ -6,6 +6,8 @@ const {log} = require("firebase-functions/logger");
 const Reservation = require("./models/Reservation");
 
 
+const ReservationsCollection = require("./utils/collections").ReservationsCollection;
+
 const getReservationsWaitingByUserId = v2.https.onRequest(async (req, res) => {
     cors(req, res, async () => {
         try {
@@ -24,7 +26,7 @@ const getReservationsWaitingByUserId = v2.https.onRequest(async (req, res) => {
             today.setHours(0, 0, 0, 0);
 
             // Riferimento alla collezione Firestore delle prenotazioni
-            const reservationsRef = admin.firestore().collection("reservations");
+            const reservationsRef = admin.firestore().collection(ReservationsCollection);
 
             // Esegui la query per ottenere le prenotazioni in attesa per l'utente
             const snapshot = await reservationsRef
@@ -65,7 +67,7 @@ const updateReservationStatus = v2.https.onRequest(async (req, res) => {
                 return res.status(400).send({ message: "Missing reservationId or reservationStatus" });
             }
 
-            const reservationRef = admin.firestore().collection("reservations").doc(reservationId);
+            const reservationRef = admin.firestore().collection(ReservationsCollection).doc(reservationId);
             const reservationDoc = await reservationRef.get();
 
             if (!reservationDoc.exists) {

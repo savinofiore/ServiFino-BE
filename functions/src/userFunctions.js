@@ -3,6 +3,9 @@ const cors = require("cors")({ origin: true });
 const v2 = require('firebase-functions/v2');
 const User = require("./models/User");
 
+const UsersCollection = require("./utils/collections").UsersCollection;
+
+
 /*
  * Funzione per creare un utente
 */
@@ -36,7 +39,7 @@ const createUser = v2.https.onRequest(async (req, res) => {
                 );
 
             // Salva i dettagli su Firestore
-            await admin.firestore().collection("users").doc(createdUser.uid).set({
+            await admin.firestore().collection(UsersCollection).doc(createdUser.uid).set({
                 ...user.toFirestoreObject(),
                 uid: createdUser.uid,
             });
@@ -70,7 +73,7 @@ const updateUser = v2.https.onRequest(async (req, res) => {
             });
 
             // Aggiorna i dati in Firestore
-            const userDocRef = admin.firestore().collection("users").doc(userId);
+            const userDocRef = admin.firestore().collection(UsersCollection).doc(userId);
             await userDocRef.update({
                 displayName: displayName,
                 work: work,

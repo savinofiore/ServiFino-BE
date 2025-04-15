@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 
 admin.initializeApp();
 
-const { createUser, updateUser} = require("./src/userFunctions");
+const {createUser, updateUser} = require("./src/userFunctions");
 const {addOrUpdateOwner, getNonOwnerUsers, addReservation, getReservationsSent} = require('./src/ownerFunctions');
 const {getReservationsWaitingByUserId, updateReservationStatus} = require("./src/workerFunctions");
 

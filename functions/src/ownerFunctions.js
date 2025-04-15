@@ -6,6 +6,10 @@ const Reservation = require("./models/Reservation");
 //const ReservationStatus = require("./models/ReservationStatus");
 const cors = require("cors")({ origin: true });
 
+const OwnersCollection = require("./utils/collections").OwnersCollection;
+const ReservationsCollection = require("./utils/collections").ReservationsCollection;
+const UsersCollection = require("./utils/collections").UsersCollection;
+
 /**
  * Funzione unificata per aggiungere o aggiornare un Owner
  */
@@ -16,7 +20,7 @@ const addOrUpdateOwner = v2.https.onRequest(async (req, res) => {
             const { userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber } = req.body.data || req.body;
             const owner = new Owner(userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber);
             // Riferimento al documento Firestore
-            const ownerDocRef = admin.firestore().collection("owners").doc(userUid);
+            const ownerDocRef = admin.firestore().collection(OwnersCollection).doc(userUid);
 
             // Verifica se l'Owner esiste già
             const ownerDoc = await ownerDocRef.get();
@@ -55,7 +59,7 @@ const getNonOwnerUsers = v2.https.onRequest(async (req, res) => {
         try {
             // Recupera tutti gli utenti dalla collezione "users" dove isOwner è false
             const usersSnapshot = await admin.firestore()
-                .collection("users")
+                .collection(UsersCollection)
                 .where("isOwner", "==", false)
                 .where("isAvailable", "==", true)
                 .get();
@@ -104,7 +108,7 @@ const addReservation = v2.https.onRequest(async (req, res) => {
             // Crea un'istanza di Reservation
             const reservation = new Reservation(user, owner, reservationDate, reservationStatus, rating, message);
             // Riferimento al documento Firestore per la prenotazione
-            const reservationsRef = admin.firestore().collection("reservations").doc();
+            const reservationsRef = admin.firestore().collection(ReservationsCollection).doc();
             // Salva la prenotazione in Firestore utilizzando il metodo toFirestoreObject
             await reservationsRef.set(reservation.toFirestoreObject());
             // Risposta di successo
@@ -140,7 +144,7 @@ const getReservationsSent = v2.https.onRequest(async (req, res) => {
 
 
             // Riferimento alla collezione Firestore delle prenotazioni
-            const reservationsRef = admin.firestore().collection("reservations");
+            const reservationsRef = admin.firestore().collection(ReservationsCollection);
             // Esegui la query per ottenere le prenotazioni in attesa per l'utente
             const snapshot = await reservationsRef
                 .where("owner.userUid", "==", userId)
