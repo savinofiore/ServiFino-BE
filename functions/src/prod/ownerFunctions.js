@@ -1,14 +1,14 @@
 const admin = require("firebase-admin");
 const v2 = require('firebase-functions/v2');
-const Owner = require("./models/Owner");
-const User = require("./models/User");
-const Reservation = require("./models/Reservation");
+const Owner = require("../models/Owner");
+const User = require("../models/User");
+const Reservation = require("../models/Reservation");
 //const ReservationStatus = require("./models/ReservationStatus");
 const cors = require("cors")({ origin: true });
 
-const OwnersCollection = require("./utils/collections").OwnersCollection;
-const ReservationsCollection = require("./utils/collections").ReservationsCollection;
-const UsersCollection = require("./utils/collections").UsersCollection;
+const OwnersCollection = require("../utils/collections").OwnersCollection;
+const ReservationsCollection = require("../utils/collections").ReservationsCollection;
+const UsersCollection = require("../utils/collections").UsersCollection;
 
 /**
  * Funzione unificata per aggiungere o aggiornare un Owner

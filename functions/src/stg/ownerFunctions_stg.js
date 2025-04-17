@@ -1,14 +1,14 @@
 const admin = require("firebase-admin");
 const v2 = require('firebase-functions/v2');
-const Owner = require("./models/Owner");
-const User = require("./models/User");
-const Reservation = require("./models/Reservation");
+const Owner = require("../models/Owner");
+const User = require("../models/User");
+const Reservation = require("../models/Reservation");
 //const ReservationStatus = require("./models/ReservationStatus");
 const cors = require("cors")({ origin: true });
 
-const OwnersCollection = require("./utils/collections").OwnersCollection_stg;
-const ReservationsCollection = require("./utils/collections").ReservationsCollection_stg;
-const UsersCollection = require("./utils/collections").UsersCollection_stg;
+const OwnersCollection = require("../utils/collections").OwnersCollection_stg;
+const ReservationsCollection = require("../utils/collections").ReservationsCollection_stg;
+const UsersCollection = require("../utils/collections").UsersCollection_stg;
 
 /**
  * Funzione unificata per aggiungere o aggiornare un Owner
@@ -17,8 +17,8 @@ const addOrUpdateOwner_stg = v2.https.onRequest(async (req, res) => {
     //if (!validateReqOwner(req, res)) return;
     cors( req, res, async properties => {
         try {
-            const { userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber } = req.body.data || req.body;
-            const owner = new Owner(userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber);
+            const { userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber, activityProvinces } = req.body.data || req.body;
+            const owner = new Owner(userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber, activityProvinces);
             // Riferimento al documento Firestore
             const ownerDocRef = admin.firestore().collection(OwnersCollection).doc(userUid);
 
@@ -57,11 +57,13 @@ const addOrUpdateOwner_stg = v2.https.onRequest(async (req, res) => {
 const getNonOwnerUsers_stg = v2.https.onRequest(async (req, res) => {
     cors(req, res, async () => {
         try {
+            const { activityProvinces } = req.body.data || req.body;
             // Recupera tutti gli utenti dalla collezione "users" dove isOwner è false
             const usersSnapshot = await admin.firestore()
                 .collection(UsersCollection)
                 .where("isOwner", "==", false)
                 .where("isAvailable", "==", true)
+                //.where("province", "==", activityProvinces)
                 .get();
 
             // Se non ci sono utenti, restituisci un array vuoto

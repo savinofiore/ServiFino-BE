@@ -1,5 +1,5 @@
 class User {
-    constructor(email, password, displayName,  disabled = false, work = null, isOwner = false, isAvailable = true) {
+    constructor(email, password, displayName,  disabled = false, work = null, isOwner = false, isAvailable = true, provinces = null,) {
         this.email = email;
         this.password = password;
         this.displayName = displayName;
@@ -10,6 +10,7 @@ class User {
         this.work = work;
         this.isOwner = isOwner;
         this.isAvailable = isAvailable;
+        this.provinces = provinces;
     }
     // Formatta i dati per Firestore
     toFirestoreObject() {
@@ -19,7 +20,8 @@ class User {
             disabled: this.disabled,
             work: this.work,
             isOwner : this.isOwner,
-            isAvailable: this.isAvailable
+            isAvailable: this.isAvailable,
+            provinces: this.provinces,
         };
     }
 }

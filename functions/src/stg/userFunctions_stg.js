@@ -1,15 +1,15 @@
 const admin = require("firebase-admin");
 const cors = require("cors")({ origin: true });
 const v2 = require('firebase-functions/v2');
-const User = require("./models/User");
+const User = require("../models/User");
 
-const UsersCollection = require("./utils/collections").UsersCollection;
+const UsersCollection = require("../utils/collections").UsersCollection_stg;
 
 
 /*
  * Funzione per creare un utente
 */
-const createUser = v2.https.onRequest(async (req, res) => {
+const createUser_stg = v2.https.onRequest(async (req, res) => {
     cors( req, res, async properties => {
         try {
             const {
@@ -20,6 +20,7 @@ const createUser = v2.https.onRequest(async (req, res) => {
                 work,
                 isOwner,
                 isAvailable,
+                provinces,
             } = req.body.data || req.body;
 
             // Crea l'istanza dell'utente tramite la classe User
@@ -30,7 +31,8 @@ const createUser = v2.https.onRequest(async (req, res) => {
                 disabled || false,
                 work,
                 isOwner,
-                isAvailable
+                isAvailable,
+                provinces,
             );
 
             // Crea l'utente in Firebase Authentication
@@ -60,12 +62,12 @@ const createUser = v2.https.onRequest(async (req, res) => {
     });
 });
 
-const updateUser = v2.https.onRequest(async (req, res) => {
+const updateUser_stg = v2.https.onRequest(async (req, res) => {
 
     cors( req, res, async properties => {
         console.log('Incoming: ', req.body.data );
         try {
-            const { userId, displayName, work, isAvailable } = req.body.data || req.body;
+            const { userId, displayName, work, isAvailable, provinces } = req.body.data || req.body;
 
             // Aggiorna i dati in Firebase Authentication
             const updatedUser = await admin.auth().updateUser(userId, {
@@ -78,6 +80,7 @@ const updateUser = v2.https.onRequest(async (req, res) => {
                 displayName: displayName,
                 work: work,
                 isAvailable: isAvailable,
+                provinces: provinces,
             });
 
             return res.status(200).send(
@@ -177,5 +180,5 @@ const loginUser = onRequest(async (req, res) => {
     }
 });*/
 
-module.exports = { createUser, updateUser /*createUserTest,deleteUser, , getUsers */};
+module.exports = { createUser_stg, updateUser_stg /*createUserTest,deleteUser, , getUsers */};
 

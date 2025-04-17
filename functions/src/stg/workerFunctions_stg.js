@@ -1,14 +1,14 @@
 const admin = require("firebase-admin");
 const v2 = require('firebase-functions/v2');
 const cors = require("cors")({ origin: true });
-const User = require("./models/User");
+const User = require("../models/User");
 const {log} = require("firebase-functions/logger");
-const Reservation = require("./models/Reservation");
+const Reservation = require("../models/Reservation");
 
 
-const ReservationsCollection = require("./utils/collections").ReservationsCollection;
+const ReservationsCollection = require("../utils/collections").ReservationsCollection_stg;
 
-const getReservationsWaitingByUserId = v2.https.onRequest(async (req, res) => {
+const getReservationsWaitingByUserId_stg = v2.https.onRequest(async (req, res) => {
     cors(req, res, async () => {
         try {
              // Estrai l'userId dalla richiesta
@@ -58,7 +58,7 @@ const getReservationsWaitingByUserId = v2.https.onRequest(async (req, res) => {
 });
 
 
-const updateReservationStatus = v2.https.onRequest(async (req, res) => {
+const updateReservationStatus_stg = v2.https.onRequest(async (req, res) => {
     cors(req, res, async () => {
         try {
             const { reservationId, reservationStatus } = req.body.data || req.body;
@@ -92,4 +92,4 @@ const updateReservationStatus = v2.https.onRequest(async (req, res) => {
 
 
 
-module.exports = { getReservationsWaitingByUserId, updateReservationStatus };
+module.exports = { getReservationsWaitingByUserId_stg, updateReservationStatus_stg };

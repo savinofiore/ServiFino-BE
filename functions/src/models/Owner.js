@@ -1,11 +1,12 @@
 class Owner {
-    constructor( userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber) {
+    constructor( userUid, activityName, activityDescription, activityLocation, activityWebsite, activityNumber, activityProvinces) {
         this.userUid = userUid;
         this.activityName = activityName;
         this.activityDescription = activityDescription;
         this.activityLocation = activityLocation;
         this.activityWebsite = activityWebsite;
         this.activityNumber = activityNumber;
+        this.activityProvinces = activityProvinces;
     }
     toFirestoreObject() {
         return {
@@ -15,6 +16,7 @@ class Owner {
             activityLocation: this.activityLocation,
             activityWebsite: this.activityWebsite,
             activityNumber: this.activityNumber,
+            activityProvinces: this.activityProvinces,
         }
     }
 }
